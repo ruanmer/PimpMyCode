@@ -9,18 +9,18 @@
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" async></script>
     <![endif]-->
 
     <!-- Le styles -->
-    <link href="css/bootstrap.min.css?v=101" rel="stylesheet">
+    <link href="css/bootstrap.min.css?v=102" rel="stylesheet">
 
     <link rel="stylesheet" href="css/codemirror.css">
     <link rel="stylesheet" href="css/codemirror-night.css">
 
     <script src="js/codemirror.js" async></script>
-    <script src="js/codemirror-javascript.js"></script>
-    <script src="js/my.js?v=100" async></script>
+    <script src="js/codemirror-javascript.js" async></script>
+    <script src="js/my.min.js?v=102"></script>
     <script type="text/javascript" src="https://apis.google.com/js/plusone.js" async></script>
     <script src="//platform.twitter.com/widgets.js" async></script>
 
@@ -69,17 +69,14 @@
     <h1>Uglify or Beautify your JavaScript, it's your choice...</h1>
 
     <form id="pimpForm" class="form-stacked" action="http://pimpmyjs.com:3000/" novalidate autocomplete="off"
-          method="POST" target="_blank">
-        <textarea name="toPimp" id="code" tabindex="1"></textarea>
-
+          method="POST" target="pimped">
         <div class="row">
-            <button class="btn danger span16 large" id="pimpit" type="submit">Pimp it!</button>
-        </div>
+            <textarea name="toPimp" id="code" tabindex="1"></textarea>
 
-        <div class="row">
-            <h2>Options</h2>
-
-            <div class="span7">
+            <div class="span4">
+                <div class="alert-message info">
+                    <p>Options</p>
+                </div>
                 <div class="clearfix">
                     <div class="input">
                         <ul class="inputs-list">
@@ -102,14 +99,6 @@
                                   Merge and move <code>var</code> declarations to the top of the scope
                                 </span>
                             </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="span7">
-                <div class="clearfix">
-                    <div class="input">
-                        <ul class="inputs-list">
                             <li>
                                 <label>
                                     <input type="checkbox" value="unsafe" name="uglifyopts">
@@ -133,6 +122,24 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <button class="btn danger span16 large" id="pimpit" type="submit">Pimp it!</button>
+        </div>
+
+        <div class="row">
+             <div id="pimped" class="span16">
+                <div class="alert-message success">
+                    <a class="close" href="#">×</a>
+                    <p><strong>Pimped!</strong></p>
+                </div>
+
+                <div class="well">
+                    <iframe src="#" name="pimped" border="0"></iframe>
+                </div>
+            </div>
+        </div>
+
     </form>
 
     <h2>How does this works?</h2>

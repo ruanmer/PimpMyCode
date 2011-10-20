@@ -1,6 +1,15 @@
-var thunderReady = __ready__ = function(callback) {
+var thunderReady = function(callback) {
   var callbackId = Math.floor(Math.random() * 100000);
   var loadedCallbacks = [];
+
+   function callbackOnce() {
+    if (loadedCallbacks.indexOf(callbackId) >= 0) {
+      return;
+    }
+    loadedCallbacks.push(callbackId);
+    callback();
+  }
+
   if (document.readyState === "complete") {
     // Handle it asynchronously to allow scripts the opportunity to delay ready
     return setTimeout(callbackOnce, 1);
@@ -20,18 +29,9 @@ var thunderReady = __ready__ = function(callback) {
     // maybe late but safe also for iframes
     document.attachEvent("onreadystatechange", callbackOnce);
 
-    window.attachEvent("onload", callbackOnce)
+    window.attachEvent("onload", callbackOnce);
   }
 
-  function callbackOnce() {
-    if (loadedCallbacks.indexOf(callbackId) >= 0) {
-      return;
-    }
-
-    callback();
-
-    loadedCallbacks.push(callbackId);
-  }
 };
 
 thunderReady(function() {
@@ -39,4 +39,26 @@ thunderReady(function() {
     lineNumbers: true,
     theme: 'night'
   });
+
+  var pimpForm = document.getElementById('pimpForm');
+  var pimped = document.getElementById('pimped');
+  var pimpedClose = pimped.getElementsByClassName('close')[0];
+
+  pimpForm.onsubmit = function() {
+    pimped.style.display = 'block';
+  };
+
+  var closePimped = function(ev) {
+    pimped.style.display = 'none';
+    ev.preventDefault && ev.preventDefault();
+    return false;
+  };
+
+  if (pimpedClose.addEventListener) {
+    pimpedClose.addEventListener('click',closePimped);
+  } else if (pimpedClose.attachEvent) {
+    pimpedClose.attachEvent('click',closePimped);
+  }
+
 });
+
