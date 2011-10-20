@@ -331,3 +331,4 @@ button.btn::-moz-focus-inner,input[type=submit].btn::-moz-focus-inner{padding:0;
 .CodeMirror{zoom:1;margin-left:-20px;margin-bottom:20px;}.CodeMirror:before,.CodeMirror:after{display:table;content:"";zoom:1;*display:inline;}
 .CodeMirror:after{clear:both;}
 #pimpit{margin-left:0;margin-bottom:20px;}
+li.share{margin-left:12px;margin-top:10px;}
