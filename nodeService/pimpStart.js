@@ -12,6 +12,7 @@ var express = require('express')
 
 app.get('*', function(req, res) {
   console.log('No post sent');
+  console.dir(req.headers || '');
   Error('not valid');
   res.status(400);
   res.send('Error, try calling my in a POST with two params: toPimp and uglifyopts. Please checkout http://pimpmyjs.com form source.');
@@ -20,6 +21,7 @@ app.get('*', function(req, res) {
 
 app.post('/', function(req, res, next) {
   console.log('Code sent via post');
+  console.dir(req.headers || '');
   // connect-form adds the req.form object
   // we can (optionally) define onComplete, passing
   // the exception (if any) fields parsed, and files parsed
