@@ -11,15 +11,17 @@ var express = require('express')
   , fs = require('fs');
 
 app.get('*', function(req, res) {
-  console.log('* get');
+  console.log('No post sent');
+  console.dir(req.headers || '');
   Error('not valid');
   res.status(400);
-  res.send('error');
+  res.send('Error, try calling my in a POST with two params: toPimp and uglifyopts. Please checkout http://pimpmyjs.com form source.');
   return;
 });
 
 app.post('/', function(req, res, next) {
-  console.log('* post');
+  console.log('Code sent via post');
+  console.dir(req.headers || '');
   // connect-form adds the req.form object
   // we can (optionally) define onComplete, passing
   // the exception (if any) fields parsed, and files parsed
@@ -67,15 +69,17 @@ app.post('/', function(req, res, next) {
         // parse code and get the initial AST
         var ast = jsp.parse(orig_code);
         
-        // get a new AST with mangled names
-        ast = pro.ast_mangle(ast);
+        if (!options.codegen_options.beautify) {
+          // get a new AST with mangled names
+          ast = pro.ast_mangle(ast);
 
-        // get an AST with compression optimizations
-        ast = pro.ast_squeeze(ast);
+          // get an AST with compression optimizations
+          ast = pro.ast_squeeze(ast);
 
-        // almost unsafe compress
-        if (!options.codegen_options.beautify && options.unsafe) {
-          ast = pro.ast_squeeze_more(ast);
+          // almost unsafe compress
+          if (options.unsafe) {
+            ast = pro.ast_squeeze_more(ast);
+          }
         }
 
         // merge and move var declarations to the scop of the scope
@@ -88,6 +92,7 @@ app.post('/', function(req, res, next) {
         Error('not valid');
         res.status(400);
         res.send('error: ' + e.message);
+        console.log('error: ' + e.message);
         return;
       }
       /*
