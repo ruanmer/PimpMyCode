@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-# version 104
+# version 105
 
 CACHE:
 # html files
@@ -10,7 +10,9 @@ index.html
 css/style.min.css
 
 # js files
-compiled.min.js
+js/compiled.min.js
 
 NETWORK:
-*
+https://apis.google.com/js/plusone.js
+http://platform.twitter.com/widgets.js
+https://platform.twitter.com/widgets.js
