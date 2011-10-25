@@ -1,16 +1,16 @@
 CACHE MANIFEST
 
-# version 107.7
+# version 107.10
 
 CACHE:
 # html files
-#index.html
+index.html
 
 # css files
-#css/style.min.css
+css/style.min.css
 
 # js files
-#js/compiled.min.js
+js/compiled.min.js
 
 NETWORK:
 https://apis.google.com/js/plusone.js
