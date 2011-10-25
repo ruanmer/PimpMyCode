@@ -1,0 +1,16 @@
+CACHE MANIFEST
+
+# version 104
+
+CACHE:
+# html files
+index.html
+
+# css files
+css/style.min.css
+
+# js files
+compiled.min.js
+
+NETWORK:
+*

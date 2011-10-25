@@ -293,87 +293,87 @@ textarea[readonly] {
 }
 
 // Help Text
-.help-inline,
+//.help-inline,
 .help-block {
   font-size: @basefont - 2;
   line-height: @baseline;
   color: @grayLight;
 }
-.help-inline {
-  padding-left: 5px;
-  *position: relative; /* IE6-7 */
-  *top: -5px; /* IE6-7 */
-}
+/*.help-inline {*/
+  /*padding-left: 5px;*/
+  /**position: relative; *//* IE6-7 */
+  /**top: -5px; *//* IE6-7 */
+/*}*/
 
 // Big blocks of help text
 .help-block {
   display: block;
   max-width: 600px;
 }
-
-// Inline Fields (input fields that appear as inline objects
-.inline-inputs {
-  color: @gray;
-  span, input {
-    display: inline-block;
-  }
-  input.mini {
-    width: 60px;
-  }
-  input.small {
-    width: 90px;
-  }
-  span {
-    padding: 0 2px 0 1px;
-  }
-}
-
-// Allow us to put symbols and text within the input field for a cleaner look
-.input-prepend,
-.input-append {
-  input {
-    .border-radius(0 3px 3px 0);
-  }
-  .add-on {
-    position: relative;
-    background: #f5f5f5;
-    border: 1px solid #ccc;
-    z-index: 2;
-    float: left;
-    display: block;
-    width: auto;
-    min-width: 16px;
-    height: 18px;
-    padding: 4px 4px 4px 5px;
-    margin-right: -1px;
-    font-weight: normal;
-    line-height: 18px;
-    color: @grayLight;
-    text-align: center;
-    text-shadow: 0 1px 0 @white;
-    .border-radius(3px 0 0 3px);
-  }
-  .active {
-    background: lighten(@green, 30);
-    border-color: @green;
-  }
-}
-.input-prepend {
-  .add-on {
-    *margin-top: 1px; /* IE6-7 */
-  }
-}
-.input-append {
-  input {
-    float: left;
-    .border-radius(3px 0 0 3px);
-  }
-  .add-on {
-    .border-radius(0 3px 3px 0);
-    margin-right: 0;
-    margin-left: -1px;
-  }
-}
+//
+//// Inline Fields (input fields that appear as inline objects
+//.inline-inputs {
+//  color: @gray;
+//  span, input {
+//    display: inline-block;
+//  }
+//  input.mini {
+//    width: 60px;
+//  }
+//  input.small {
+//    width: 90px;
+//  }
+//  span {
+//    padding: 0 2px 0 1px;
+//  }
+//}
+//
+//// Allow us to put symbols and text within the input field for a cleaner look
+//.input-prepend,
+//.input-append {
+//  input {
+//    .border-radius(0 3px 3px 0);
+//  }
+//  .add-on {
+//    position: relative;
+//    background: #f5f5f5;
+//    border: 1px solid #ccc;
+//    z-index: 2;
+//    float: left;
+//    display: block;
+//    width: auto;
+//    min-width: 16px;
+//    height: 18px;
+//    padding: 4px 4px 4px 5px;
+//    margin-right: -1px;
+//    font-weight: normal;
+//    line-height: 18px;
+//    color: @grayLight;
+//    text-align: center;
+//    text-shadow: 0 1px 0 @white;
+//    .border-radius(3px 0 0 3px);
+//  }
+//  .active {
+//    background: lighten(@green, 30);
+//    border-color: @green;
+//  }
+//}
+//.input-prepend {
+//  .add-on {
+//    *margin-top: 1px; /* IE6-7 */
+//  }
+//}
+//.input-append {
+//  input {
+//    float: left;
+//    .border-radius(3px 0 0 3px);
+//  }
+//  .add-on {
+//    .border-radius(0 3px 3px 0);
+//    margin-right: 0;
+//    margin-left: -1px;
+//  }
+//}
 
 // Stacked options for forms (radio buttons or checkboxes)
 .inputs-list {
