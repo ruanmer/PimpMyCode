@@ -2,44 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Pimp My JS</title>
-    <meta name="description" content="It's a code pimper with uglify option!">
+    <title>PimpMyJS - Your minified or pretty printed JavaScript</title>
+    <meta name="description" content="PimpMyJS is a javascript minifier using uglifyjs! You can use it's interface or simply the webservice to minify or get a pretty print of your javascript code">
     <meta name="author" content="Leo Balter">
-    <link rel=”canonical” href="http://pimpmyjs.com/"/>
+    <link rel=”canonical” href="http://pimpmyjs.com/" />
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" async></script>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" defer></script>
     <![endif]-->
 
     <!-- Le styles -->
-    <link href="css/bootstrap.min.css?v=103" rel="stylesheet">
+    <link href="css/style.min.css?v=124" rel="stylesheet">
 
-    <link rel="stylesheet" href="css/codemirror.css">
-    <link rel="stylesheet" href="css/codemirror-night.css">
-
-    <script src="js/codemirror.js" ></script>
-    <script src="js/codemirror-javascript.js" ></script>
-    <script src="js/my.min.js?v=103" async></script>
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js" async></script>
-    <script src="//platform.twitter.com/widgets.js" async></script>
-
-    <script type="text/javascript">
-
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-26406401-2']);
-        _gaq.push(['_trackPageview']);
-
-        (function() {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
-
-    </script>
+    <script src="js/compiled.min.js?v=124" async></script>
 
 </head>
 
@@ -48,16 +24,18 @@
 <div class="topbar">
     <div class="fill">
         <div class="container">
-            <a class="brand" href="http://pimpmyjs.com">Pimp My JS</a>
+            <a class="brand" href="http://pimpmyjs.com">PimpMyJS</a>
             <ul class="nav">
                 <li class="active"><a href="http://pimpmyjs.com">Home</a></li>
                 <li><a href="https://github.com/leobalter/PimpMyCode" target="_blank">See the code in Github</a></li>
                 <li class="share">
                     <g:plusone size="medium"></g:plusone>
                 </li>
-                <li class="share"><a href="https://twitter.com/share" class="twitter-share-button"
-                                     data-text="Uglify or Beautify your JavaScript" data-count="horizontal"
-                                     data-via="PimpMyJS" data-related="leobalter">Tweet</a></li>
+                <li class="share">
+                    <a href="https://twitter.com/share" class="twitter-share-button"
+                         data-text="Uglify or Beautify your JavaScript" data-count="horizontal"
+                         data-via="PimpMyJS" data-related="leobalter">Tweet</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -65,8 +43,11 @@
 
 
 <div class="container">
+    <header>
+        <h1>Uglify or Beautify your JavaScript, it's your choice...</h1>
 
-    <h1>Uglify or Beautify your JavaScript, it's your choice...</h1>
+        <p class="desc">It's a code pimper with uglify option! You can use it's interface or simply the webservice to minify or get a pretty print of your javascript code</p>
+    </header>
 
     <form id="pimpForm" class="form-stacked" action="http://pimpmyjs.com:3000/" novalidate autocomplete="off"
           method="POST" target="pimped">
@@ -135,12 +116,14 @@
                 </div>
 
                 <div class="well">
-                    <iframe src="#" name="pimped" border="0"></iframe>
+                    <iframe src="blank.html" name="pimped"></iframe>
                 </div>
             </div>
         </div>
 
     </form>
+
+    <p class="desc">Checkout the form source to see the webservice's funcionality!</p>
 
     <h2>How does this work?</h2>
 
@@ -149,7 +132,13 @@
             <p>You send your Javascript code, ugly or not:</p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=normal.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line"><span class="kd">var</span> <span class="nx">Song</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></div><div id="LC2" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">defaults</span><span class="o">:</span> <span class="p">{</span></div><div id="LC3" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">name</span><span class="o">:</span> <span class="s2">"Not specified"</span><span class="p">,</span></div><div id="LC4" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">artist</span><span class="o">:</span> <span class="s2">"Not specified"</span></div><div id="LC5" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">},</span></div><div id="LC6" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div id="LC7" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Music is the answer"</span><span class="p">);</span></div><div id="LC8" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div id="LC9" class="line"><span class="p">});</span></div><div id="LC10" class="line"><br></div><div id="LC11" class="line"><span class="kd">var</span> <span class="nx">Album</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></div><div id="LC12" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">model</span><span class="o">:</span> <span class="nx">Song</span></div><div id="LC13" class="line"><span class="p">});</span></div><div id="LC14" class="line"><br></div><div id="LC15" class="line"><span class="kd">var</span> <span class="nx">song1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Song</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"How Bizarre"</span><span class="p">,</span> <span class="nx">artist</span><span class="o">:</span> <span class="s2">"OMC"</span> <span class="p">});</span></div><div id="LC16" class="line"><span class="kd">var</span> <span class="nx">song2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Song</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"Sexual Healing"</span><span class="p">,</span> <span class="nx">artist</span><span class="o">:</span> <span class="s2">"Marvin Gaye"</span> <span class="p">});</span></div><div id="LC17" class="line"><span class="kd">var</span> <span class="nx">song3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Song</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">"Talk It Over In Bed"</span><span class="p">,</span> <span class="nx">artist</span><span class="o">:</span> <span class="s2">"OMC"</span> <span class="p">});</span></div><div id="LC18" class="line"><br></div><div id="LC19" class="line"><span class="kd">var</span> <span class="nx">myAlbum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Album</span><span class="p">([</span> <span class="nx">song1</span><span class="p">,</span> <span class="nx">song2</span><span class="p">,</span> <span class="nx">song3</span><span class="p">]);</span></div><div id="LC20" class="line"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAlbum</span><span class="p">.</span><span class="nx">models</span><span class="p">);</span> <span class="c1">// [song1, song2, song3]</span></div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -158,7 +147,13 @@
             <p>Then you can uglify it:</p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=ugly.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line">var Song=Backbone.Model.extend({defaults:{name:"Not specified",artist:"Not specified"},initialize:function(){console.log("Music is the answer")}}),Album=Backbone.Collection.extend({model:Song}),song1=new Song({name:"How Bizarre",artist:"OMC"}),song2=new Song({name:"Sexual Healing",artist:"Marvin Gaye"}),song3=new Song({name:"Talk It Over In Bed",artist:"OMC"}),myAlbum=new Album([song1,song2,song3]);console.log(myAlbum.models)</div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -171,7 +166,13 @@
             <p>This doesn't bring beauty of Dart of CoffeeScript codes, ever.</p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=beautify.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line"><span class="kd">var</span> <span class="nx">Song</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></div><div id="LC2" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">defaults</span><span class="o">:</span> <span class="p">{</span></div><div id="LC3" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">name</span><span class="o">:</span> <span class="s2">"Not specified"</span><span class="p">,</span></div><div id="LC4" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">artist</span><span class="o">:</span> <span class="s2">"Not specified"</span></div><div id="LC5" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">},</span></div><div id="LC6" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span></div><div id="LC7" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Music is the answer"</span><span class="p">);</span></div><div id="LC8" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div id="LC9" class="line"><span class="p">}),</span> <span class="nx">Album</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></div><div id="LC10" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">model</span><span class="o">:</span> <span class="nx">Song</span></div><div id="LC11" class="line"><span class="p">}),</span> <span class="nx">song1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Song</span><span class="p">({</span></div><div id="LC12" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">name</span><span class="o">:</span> <span class="s2">"How Bizarre"</span><span class="p">,</span></div><div id="LC13" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">artist</span><span class="o">:</span> <span class="s2">"OMC"</span></div><div id="LC14" class="line"><span class="p">}),</span> <span class="nx">song2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Song</span><span class="p">({</span></div><div id="LC15" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">name</span><span class="o">:</span> <span class="s2">"Sexual Healing"</span><span class="p">,</span></div><div id="LC16" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">artist</span><span class="o">:</span> <span class="s2">"Marvin Gaye"</span></div><div id="LC17" class="line"><span class="p">}),</span> <span class="nx">song3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Song</span><span class="p">({</span></div><div id="LC18" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">name</span><span class="o">:</span> <span class="s2">"Talk It Over In Bed"</span><span class="p">,</span></div><div id="LC19" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">artist</span><span class="o">:</span> <span class="s2">"OMC"</span></div><div id="LC20" class="line"><span class="p">}),</span> <span class="nx">myAlbum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Album</span><span class="p">([</span> <span class="nx">song1</span><span class="p">,</span> <span class="nx">song2</span><span class="p">,</span> <span class="nx">song3</span> <span class="p">]);</span></div><div id="LC21" class="line"><br></div><div id="LC22" class="line"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">myAlbum</span><span class="p">.</span><span class="nx">models</span><span class="p">);</span></div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -186,7 +187,13 @@
             <p>This will be ignored if you check the beautify option</p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=unsafe.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line"><span class="nx">obj</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="c1">// =&gt; obj+""</span></div><div id="LC2" class="line"><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="c1">// =&gt; [1,2,3,4]</span></div><div id="LC3" class="line"><span class="nb">Array</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span>        <span class="c1">// =&gt; [a,b,c]</span></div><div id="LC4" class="line"><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>          <span class="c1">// =&gt; Array(5)</span></div><div id="LC5" class="line"><span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>          <span class="c1">// =&gt; Array(a)</span></div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -199,7 +206,13 @@
             </p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=inline.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="s2">"&lt;/script&gt;"</span><span class="p">;</span> <span class="c1">// =&gt; var a="&lt;\/script&gt;"</span></div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -220,7 +233,13 @@
                 not happen if the variables are lifted in advance."</p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=liftVars.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line"><span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">d</span><span class="p">,</span> <span class="nx">e</span><span class="p">)</span> <span class="p">{</span></div><div id="LC2" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">q</span><span class="p">;</span></div><div id="LC3" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">w</span><span class="p">;</span></div><div id="LC4" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">w</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span></div><div id="LC5" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">q</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span></div><div id="LC6" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span></div><div id="LC7" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">boo</span> <span class="o">=</span> <span class="nx">foo</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span></div><div id="LC8" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div id="LC9" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span></div><div id="LC10" class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">boo</span> <span class="o">=</span> <span class="nx">bar</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span></div><div id="LC11" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="p">}</span></div><div id="LC12" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">foo</span><span class="p">(){</span> <span class="cm">/*...*/</span> <span class="p">}</span></div><div id="LC13" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">bar</span><span class="p">(){</span> <span class="cm">/*...*/</span> <span class="p">}</span></div><div id="LC14" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">baz</span><span class="p">(){</span> <span class="cm">/*...*/</span> <span class="p">}</span></div><div id="LC15" class="line"><span class="p">}</span></div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -229,7 +248,13 @@
             <p>Check out the lift vars result (with Beautify):</p>
         </div>
         <div class="span12">
-            <script src="https://gist.github.com/1297100.js?file=liftVarsResult.js"></script>
+            <div class="gist">
+                <div class="gist-file">
+                    <div class="gist-data gist-syntax">
+                        <div class="gist-highlight"><pre><div class="line"><span class="kd">function</span> <span class="nx">f</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span> <span class="p">{</span></div><div id="LC2" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">var</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span></div><div id="LC3" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">j</span><span class="p">()</span> <span class="p">{}</span></div><div id="LC4" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="kd">function</span> <span class="nx">k</span><span class="p">()</span> <span class="p">{}</span></div><div id="LC5" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="nx">g</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">f</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span></div><div id="LC6" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> <span class="p">(</span><span class="nx">h</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">h</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="o">++</span><span class="nx">h</span><span class="p">)</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">j</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span></div><div id="LC7" class="line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">for</span> <span class="p">(</span><span class="nx">h</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">h</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="nx">h</span><span class="p">)</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">k</span><span class="p">(</span><span class="nx">c</span><span class="p">);</span></div><div id="LC8" class="line"><span class="p">}</span></div></pre></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

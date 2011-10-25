@@ -1,3 +1,549 @@
+/*yepnope1.0.2|WTFPL*/
+// yepnope.js
+// Version - 1.0.2
+//
+// by
+// Alex Sexton - @SlexAxton - AlexSexton[at]gmail.com
+// Ralph Holzmann - @ralphholzmann - ralphholzmann[at]gmail.com
+//
+// http://yepnopejs.com/
+// https://github.com/SlexAxton/yepnope.js/
+//
+// Tri-license - WTFPL | MIT | BSD
+//
+// Please minify before use.
+// Also available as Modernizr.load via the Modernizr Project
+//
+( function ( window, doc, undef ) {
+
+var docElement            = doc.documentElement,
+    sTimeout              = window.setTimeout,
+    firstScript           = doc.getElementsByTagName( 'script' )[ 0 ],
+    toString              = {}.toString,
+    execStack             = [],
+    started               = 0,
+    // Before you get mad about browser sniffs, please read:
+    // https://github.com/Modernizr/Modernizr/wiki/Undetectables
+    // If you have a better solution, we are actively looking to solve the problem
+    isGecko               = ( 'MozAppearance' in docElement.style ),
+    isGeckoLTE18          = isGecko && !! doc.createRange().compareNode,
+    isGeckoGT18           = isGecko && ! isGeckoLTE18,
+    insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
+    // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
+    isOpera               = window.opera && toString.call( window.opera ) == '[object Opera]',
+    isWebkit              = ( 'webkitAppearance' in docElement.style ),
+    isNewerWebkit         = isWebkit && 'async' in doc.createElement('script'),
+    strJsElem             = isGecko ? 'object' : ( isOpera || isNewerWebkit ) ? 'img' : 'script',
+    strCssElem            = isWebkit ? 'img' : strJsElem,
+    isArray               = Array.isArray || function ( obj ) {
+      return toString.call( obj ) == '[object Array]';
+    },
+    isObject              = function ( obj ) {
+      return Object(obj) === obj;
+    },
+    isString              = function ( s ) {
+      return typeof s == 'string';
+    },
+    isFunction            = function ( fn ) {
+      return toString.call( fn ) == '[object Function]';
+    },
+    globalFilters         = [],
+    prefixes              = {},
+    handler,
+    yepnope;
+
+  /* Loader helper functions */
+  function isFileReady ( readyState ) {
+    // Check to see if any of the ways a file can be ready are available as properties on the file's element
+    return ( ! readyState || readyState == 'loaded' || readyState == 'complete' );
+  }
+
+  function execWhenReady () {
+    var execStackReady = 1,
+        i              = -1;
+
+    // Loop through the stack of scripts in the cue and execute them when all scripts in a group are ready
+    while ( execStack.length - ++i ) {
+      if ( execStack[ i ].s && ! ( execStackReady = execStack[ i ].r ) ) {
+        // As soon as we encounter a script that isn't ready, stop looking for more
+        break;
+      }
+    }
+
+    // If we've set the stack as ready in the loop, make it happen here
+    execStackReady && executeStack();
+
+  }
+
+  // Takes a preloaded js obj (changes in different browsers) and injects it into the head
+  // in the appropriate order
+  function injectJs ( oldObj ) {
+    var script = doc.createElement( 'script' ),
+        done;
+
+    script.src = oldObj.s;
+
+    // Bind to load events
+    script.onreadystatechange = script.onload = function () {
+
+      if ( ! done && isFileReady( script.readyState ) ) {
+
+        // Set done to prevent this function from being called twice.
+        done = 1;
+        execWhenReady();
+
+        // Handle memory leak in IE
+        script.onload = script.onreadystatechange = null;
+      }
+    };
+
+    // 404 Fallback
+    sTimeout( function () {
+      if ( ! done ) {
+        done = 1;
+        execWhenReady();
+      }
+    }, yepnope.errorTimeout );
+
+    // Inject script into to document
+    // or immediately callback if we know there
+    // was previously a timeout error
+    oldObj.e ? script.onload() : firstScript.parentNode.insertBefore( script, firstScript );
+  }
+
+  // Takes a preloaded css obj (changes in different browsers) and injects it into the head
+  // in the appropriate order
+  // Many credits to John Hann (@unscriptable) for a lot of the ideas here - found in the css! plugin for RequireJS
+  function injectCss ( oldObj ) {
+
+    // Create stylesheet link
+    var link = doc.createElement( 'link' ),
+        done;
+
+    // Add attributes
+    link.href = oldObj.s;
+    link.rel  = 'stylesheet';
+    link.type = 'text/css';
+
+    // Poll for changes in webkit and gecko
+    if ( ! oldObj.e && ( isWebkit || isGecko ) ) {
+      // A self executing function with a sTimeout poll to call itself
+      // again until the css file is added successfully
+      var poll = function ( link ) {
+        sTimeout( function () {
+          // Don't run again if we're already done
+          if ( ! done ) {
+            try {
+              // In supporting browsers, we can see the length of the cssRules of the file go up
+              if ( link.sheet.cssRules.length ) {
+                // Then turn off the poll
+                done = 1;
+                // And execute a function to execute callbacks when all dependencies are met
+                execWhenReady();
+              }
+              // otherwise, wait another interval and try again
+              else {
+                poll( link );
+              }
+            }
+            catch ( ex ) {
+              // In the case that the browser does not support the cssRules array (cross domain)
+              // just check the error message to see if it's a security error
+              if ( ( ex.code == 1e3 ) || ( ex.message == 'security' || ex.message == 'denied' ) ) {
+                // if it's a security error, that means it loaded a cross domain file, so stop the timeout loop
+                done = 1;
+                // and execute a check to see if we can run the callback(s) immediately after this function ends
+                sTimeout( function () {
+                  execWhenReady();
+                }, 0 );
+              }
+              // otherwise, continue to poll
+              else {
+                poll( link );
+              }
+            }
+          }
+        }, 0 );
+      };
+      poll( link );
+
+    }
+    // Onload handler for IE and Opera
+    else {
+      // In browsers that allow the onload event on link tags, just use it
+      link.onload = function () {
+        if ( ! done ) {
+          // Set our flag to complete
+          done = 1;
+          // Check to see if we can call the callback
+          sTimeout( function () {
+            execWhenReady();
+          }, 0 );
+        }
+      };
+
+      // if we shouldn't inject due to error or settings, just call this right away
+      oldObj.e && link.onload();
+    }
+
+    // 404 Fallback
+    sTimeout( function () {
+      if ( ! done ) {
+        done = 1;
+        execWhenReady();
+      }
+    }, yepnope.errorTimeout );
+
+    // Inject CSS
+    // only inject if there are no errors, and we didn't set the no inject flag ( oldObj.e )
+    ! oldObj.e && firstScript.parentNode.insertBefore( link, firstScript );
+  }
+
+  function executeStack ( ) {
+    // shift an element off of the stack
+    var i   = execStack.shift();
+    started = 1;
+
+    // if a is truthy and the first item in the stack has an src
+    if ( i ) {
+      // if it's a script, inject it into the head with no type attribute
+      if ( i.t ) {
+        // Inject after a timeout so FF has time to be a jerk about it and
+        // not double load (ignore the cache)
+        sTimeout( function () {
+          i.t == 'c' ?  injectCss( i ) : injectJs( i );
+        }, 0 );
+      }
+      // Otherwise, just call the function and potentially run the stack
+      else {
+        i();
+        execWhenReady();
+      }
+    }
+    else {
+      // just reset out of recursive mode
+      started = 0;
+    }
+  }
+
+  function preloadFile ( elem, url, type, splicePoint, docElement, dontExec ) {
+
+    // Create appropriate element for browser and type
+    var preloadElem = doc.createElement( elem ),
+        done        = 0,
+        stackObject = {
+          t: type,     // type
+          s: url,      // src
+        //r: 0,        // ready
+          e : dontExec // set to true if we don't want to reinject
+        };
+
+    function onload () {
+
+      // If the script/css file is loaded
+      if ( ! done && isFileReady( preloadElem.readyState ) ) {
+
+        // Set done to prevent this function from being called twice.
+        stackObject.r = done = 1;
+
+        ! started && execWhenReady();
+
+        // Handle memory leak in IE
+        preloadElem.onload = preloadElem.onreadystatechange = null;
+        sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 0);
+      }
+    }
+
+    // Just set the src and the data attributes so we don't have differentiate between elem types
+    preloadElem.src = preloadElem.data = url;
+
+    // Don't let it show up visually
+    ! isGeckoLTE18 && ( preloadElem.style.display = 'none' );
+    preloadElem.width = preloadElem.height = '0';
+
+
+    // Only if we have a type to add should we set the type attribute (a real script has no type)
+    if ( elem != 'object' ) {
+      preloadElem.type = type;
+    }
+
+    // Attach handlers for all browsers
+    preloadElem.onload = preloadElem.onreadystatechange = onload;
+
+    // If it's an image
+    if ( elem == 'img' ) {
+      // Use the onerror callback as the 'completed' indicator
+      preloadElem.onerror = onload;
+    }
+    // Otherwise, if it's a script element
+    else if ( elem == 'script' ) {
+      // handle errors on script elements when we can
+      preloadElem.onerror = function () {
+        stackObject.e = stackObject.r = 1;
+        executeStack();
+      };
+    }
+
+    // inject the element into the stack depending on if it's
+    // in the middle of other scripts or not
+    execStack.splice( splicePoint, 0, stackObject );
+
+    // The only place these can't go is in the <head> element, since objects won't load in there
+    // so we have two options - insert before the head element (which is hard to assume) - or
+    // insertBefore technically takes null/undefined as a second param and it will insert the element into
+    // the parent last. We try the head, and it automatically falls back to undefined.
+    insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
+
+    // If something fails, and onerror doesn't fire,
+    // continue after a timeout.
+    sTimeout( function () {
+      if ( ! done ) {
+        // Remove the node from the dom
+        insBeforeObj.removeChild( preloadElem );
+        // Set it to ready to move on
+        // indicate that this had a timeout error on our stack object
+        stackObject.r = stackObject.e = done = 1;
+        // Continue on
+        execWhenReady();
+      }
+    }, yepnope.errorTimeout );
+  }
+
+  function load ( resource, type, dontExec ) {
+
+    var elem  = ( type == 'c' ? strCssElem : strJsElem );
+
+    // If this method gets hit multiple times, we should flag
+    // that the execution of other threads should halt.
+    started = 0;
+
+    // We'll do 'j' for js and 'c' for css, yay for unreadable minification tactics
+    type = type || 'j';
+    if ( isString( resource ) ) {
+      // if the resource passed in here is a string, preload the file
+      preloadFile( elem, resource, type, this.i++, docElement, dontExec );
+    } else {
+      // Otherwise it's a resource object and we can splice it into the app at the current location
+      execStack.splice( this.i++, 0, resource );
+      execStack.length == 1 && executeStack();
+    }
+
+    // OMG is this jQueries? For chaining...
+    return this;
+  }
+
+  // return the yepnope object with a fresh loader attached
+  function getYepnope () {
+    var y = yepnope;
+    y.loader = {
+      load: load,
+      i : 0
+    };
+    return y;
+  }
+
+  /* End loader helper functions */
+    // Yepnope Function
+  yepnope = function ( needs ) {
+
+    var i,
+        need,
+        // start the chain as a plain instance
+        chain = this.yepnope.loader;
+
+    function satisfyPrefixes ( url ) {
+      // split all prefixes out
+      var parts   = url.split( '!' ),
+      gLen    = globalFilters.length,
+      origUrl = parts.pop(),
+      pLen    = parts.length,
+      res     = {
+        url      : origUrl,
+        // keep this one static for callback variable consistency
+        origUrl  : origUrl,
+        prefixes : parts
+      },
+      mFunc,
+      j;
+
+      // loop through prefixes
+      // if there are none, this automatically gets skipped
+      for ( j = 0; j < pLen; j++ ) {
+        mFunc = prefixes[ parts[ j ] ];
+        if ( mFunc ) {
+          res = mFunc( res );
+        }
+      }
+
+      // Go through our global filters
+      for ( j = 0; j < gLen; j++ ) {
+        res = globalFilters[ j ]( res );
+      }
+
+      // return the final url
+      return res;
+    }
+
+    function loadScriptOrStyle ( input, callback, chain, index, testResult ) {
+      // run through our set of prefixes
+      var resource     = satisfyPrefixes( input ),
+          autoCallback = resource.autoCallback;
+
+      // if no object is returned or the url is empty/0 just exit the load
+      if ( resource.bypass ) {
+        return;
+      }
+
+      // Determine callback, if any
+      if ( callback ) {
+        callback = isFunction( callback ) ? callback : callback[ input ] || callback[ index ] || callback[ ( input.split( '/' ).pop().split( '?' )[ 0 ] ) ];
+      }
+
+      // if someone is overriding all normal functionality
+      if ( resource.instead ) {
+        return resource.instead( input, callback, chain, index, testResult );
+      }
+      else {
+
+        chain.load( resource.url, ( ( resource.forceCSS || ( ! resource.forceJS && /css$/.test( resource.url ) ) ) ) ? 'c' : undef, resource.noexec );
+
+        // If we have a callback, we'll start the chain over
+        if ( isFunction( callback ) || isFunction( autoCallback ) ) {
+          // Call getJS with our current stack of things
+          chain.load( function () {
+            // Hijack yepnope and restart index counter
+            getYepnope();
+            // Call our callbacks with this set of data
+            callback && callback( resource.origUrl, testResult, index );
+            autoCallback && autoCallback( resource.origUrl, testResult, index );
+          } );
+        }
+      }
+    }
+
+    function loadFromTestObject ( testObject, chain ) {
+        var testResult = !! testObject.test,
+            group      = testResult ? testObject.yep : testObject.nope,
+            always     = testObject.load || testObject.both,
+            callback   = testObject.callback,
+            callbackKey;
+
+        // Reusable function for dealing with the different input types
+        // NOTE:: relies on closures to keep 'chain' up to date, a bit confusing, but
+        // much smaller than the functional equivalent in this case.
+        function handleGroup ( needGroup ) {
+          // If it's a string
+          if ( isString( needGroup ) ) {
+            // Just load the script of style
+            loadScriptOrStyle( needGroup, callback, chain, 0, testResult );
+          }
+          // See if we have an object. Doesn't matter if it's an array or a key/val hash
+          // Note:: order cannot be guaranteed on an key value object with multiple elements
+          // since the for-in does not preserve order. Arrays _should_ go in order though.
+          else if ( isObject( needGroup ) ) {
+            for ( callbackKey in needGroup ) {
+              // Safari 2 does not have hasOwnProperty, but not worth the bytes for a shim
+              // patch if needed. Kangax has a nice shim for it. Or just remove the check
+              // and promise not to extend the object prototype.
+              if ( needGroup.hasOwnProperty( callbackKey ) ) {
+                loadScriptOrStyle( needGroup[ callbackKey ], callback, chain, callbackKey, testResult );
+              }
+            }
+          }
+        }
+
+        // figure out what this group should do
+        handleGroup( group );
+
+        // Run our loader on the load/both group too
+        handleGroup( always );
+
+        // Fire complete callback
+        if ( testObject.complete ) {
+          chain.load( testObject.complete );
+        }
+
+    }
+
+    // Someone just decides to load a single script or css file as a string
+    if ( isString( needs ) ) {
+      loadScriptOrStyle( needs, 0, chain, 0 );
+    }
+    // Normal case is likely an array of different types of loading options
+    else if ( isArray( needs ) ) {
+      // go through the list of needs
+      for( i = 0; i < needs.length; i++ ) {
+        need = needs[ i ];
+
+        // if it's a string, just load it
+        if ( isString( need ) ) {
+          loadScriptOrStyle( need, 0, chain, 0 );
+        }
+        // if it's an array, call our function recursively
+        else if ( isArray( need ) ) {
+          yepnope( need );
+        }
+        // if it's an object, use our modernizr logic to win
+        else if ( isObject( need ) ) {
+          loadFromTestObject( need, chain );
+        }
+      }
+    }
+    // Allow a single object to be passed in
+    else if ( isObject( needs ) ) {
+      loadFromTestObject( needs, chain );
+    }
+  };
+
+  // This publicly exposed function is for allowing
+  // you to add functionality based on prefixes on the
+  // string files you add. 'css!' is a builtin prefix
+  //
+  // The arguments are the prefix (not including the !) as a string
+  // and
+  // A callback function. This function is passed a resource object
+  // that can be manipulated and then returned. (like middleware. har.)
+  //
+  // Examples of this can be seen in the officially supported ie prefix
+  yepnope.addPrefix = function ( prefix, callback ) {
+    prefixes[ prefix ] = callback;
+  };
+
+  // A filter is a global function that every resource
+  // object that passes through yepnope will see. You can
+  // of course conditionally choose to modify the resource objects
+  // or just pass them along. The filter function takes the resource
+  // object and is expected to return one.
+  //
+  // The best example of a filter is the 'autoprotocol' officially
+  // supported filter
+  yepnope.addFilter = function ( filter ) {
+    globalFilters.push( filter );
+  };
+
+  // Default error timeout to 10sec - modify to alter
+  yepnope.errorTimeout = 1e4;
+
+  // Webreflection readystate hack
+  // safe for jQuery 1.4+ ( i.e. don't use yepnope with jQuery 1.3.2 )
+  // if the readyState is null and we have a listener
+  if ( doc.readyState == null && doc.addEventListener ) {
+    // set the ready state to loading
+    doc.readyState = 'loading';
+    // call the listener
+    doc.addEventListener( 'DOMContentLoaded', handler = function () {
+      // Remove the listener
+      doc.removeEventListener( 'DOMContentLoaded', handler, 0 );
+      // Set it to ready
+      doc.readyState = 'complete';
+    }, 0 );
+  }
+
+  // Attach loader &
+  // Leak it
+  window.yepnope = getYepnope();
+
+} )( this, this.document );
 var CodeMirror = (function() {
   // This is the function that produces an editor instance. It's
   // closure is used to store the editor state.
@@ -2189,4 +2735,464 @@ var CodeMirror = (function() {
   CodeMirror.defineMIME("text/plain", "null");
 
   return CodeMirror;
+})();
+CodeMirror.defineMode("javascript", function(config, parserConfig) {
+  var indentUnit = config.indentUnit;
+  var jsonMode = parserConfig.json;
+
+  // Tokenizer
+
+  var keywords = function(){
+    function kw(type) {return {type: type, style: "keyword"};}
+    var A = kw("keyword a"), B = kw("keyword b"), C = kw("keyword c");
+    var operator = kw("operator"), atom = {type: "atom", style: "atom"};
+    return {
+      "if": A, "while": A, "with": A, "else": B, "do": B, "try": B, "finally": B,
+      "return": C, "break": C, "continue": C, "new": C, "delete": C, "throw": C,
+      "var": kw("var"), "function": kw("function"), "catch": kw("catch"),
+      "for": kw("for"), "switch": kw("switch"), "case": kw("case"), "default": kw("default"),
+      "in": operator, "typeof": operator, "instanceof": operator,
+      "true": atom, "false": atom, "null": atom, "undefined": atom, "NaN": atom, "Infinity": atom
+    };
+  }();
+
+  var isOperatorChar = /[+\-*&%=<>!?|]/;
+
+  function chain(stream, state, f) {
+    state.tokenize = f;
+    return f(stream, state);
+  }
+
+  function nextUntilUnescaped(stream, end) {
+    var escaped = false, next;
+    while ((next = stream.next()) != null) {
+      if (next == end && !escaped)
+        return false;
+      escaped = !escaped && next == "\\";
+    }
+    return escaped;
+  }
+
+  // Used as scratch variables to communicate multiple values without
+  // consing up tons of objects.
+  var type, content;
+  function ret(tp, style, cont) {
+    type = tp; content = cont;
+    return style;
+  }
+
+  function jsTokenBase(stream, state) {
+    var ch = stream.next();
+    if (ch == '"' || ch == "'")
+      return chain(stream, state, jsTokenString(ch));
+    else if (/[\[\]{}\(\),;\:\.]/.test(ch))
+      return ret(ch);
+    else if (ch == "0" && stream.eat(/x/i)) {
+      stream.eatWhile(/[\da-f]/i);
+      return ret("number", "number");
+    }      
+    else if (/\d/.test(ch)) {
+      stream.match(/^\d*(?:\.\d*)?(?:e[+\-]?\d+)?/);
+      return ret("number", "number");
+    }
+    else if (ch == "/") {
+      if (stream.eat("*")) {
+        return chain(stream, state, jsTokenComment);
+      }
+      else if (stream.eat("/")) {
+        stream.skipToEnd();
+        return ret("comment", "comment");
+      }
+      else if (state.reAllowed) {
+        nextUntilUnescaped(stream, "/");
+        stream.eatWhile(/[gimy]/); // 'y' is "sticky" option in Mozilla
+        return ret("regexp", "string");
+      }
+      else {
+        stream.eatWhile(isOperatorChar);
+        return ret("operator", null, stream.current());
+      }
+    }
+    else if (ch == "#") {
+        stream.skipToEnd();
+        return ret("error", "error");
+    }
+    else if (isOperatorChar.test(ch)) {
+      stream.eatWhile(isOperatorChar);
+      return ret("operator", null, stream.current());
+    }
+    else {
+      stream.eatWhile(/[\w\$_]/);
+      var word = stream.current(), known = keywords.propertyIsEnumerable(word) && keywords[word];
+      return known ? ret(known.type, known.style, word) :
+                     ret("variable", "variable", word);
+    }
+  }
+
+  function jsTokenString(quote) {
+    return function(stream, state) {
+      if (!nextUntilUnescaped(stream, quote))
+        state.tokenize = jsTokenBase;
+      return ret("string", "string");
+    };
+  }
+
+  function jsTokenComment(stream, state) {
+    var maybeEnd = false, ch;
+    while (ch = stream.next()) {
+      if (ch == "/" && maybeEnd) {
+        state.tokenize = jsTokenBase;
+        break;
+      }
+      maybeEnd = (ch == "*");
+    }
+    return ret("comment", "comment");
+  }
+
+  // Parser
+
+  var atomicTypes = {"atom": true, "number": true, "variable": true, "string": true, "regexp": true};
+
+  function JSLexical(indented, column, type, align, prev, info) {
+    this.indented = indented;
+    this.column = column;
+    this.type = type;
+    this.prev = prev;
+    this.info = info;
+    if (align != null) this.align = align;
+  }
+
+  function inScope(state, varname) {
+    for (var v = state.localVars; v; v = v.next)
+      if (v.name == varname) return true;
+  }
+
+  function parseJS(state, style, type, content, stream) {
+    var cc = state.cc;
+    // Communicate our context to the combinators.
+    // (Less wasteful than consing up a hundred closures on every call.)
+    cx.state = state; cx.stream = stream; cx.marked = null, cx.cc = cc;
+  
+    if (!state.lexical.hasOwnProperty("align"))
+      state.lexical.align = true;
+
+    while(true) {
+      var combinator = cc.length ? cc.pop() : jsonMode ? expression : statement;
+      if (combinator(type, content)) {
+        while(cc.length && cc[cc.length - 1].lex)
+          cc.pop()();
+        if (cx.marked) return cx.marked;
+        if (type == "variable" && inScope(state, content)) return "variable-2";
+        return style;
+      }
+    }
+  }
+
+  // Combinator utils
+
+  var cx = {state: null, column: null, marked: null, cc: null};
+  function pass() {
+    for (var i = arguments.length - 1; i >= 0; i--) cx.cc.push(arguments[i]);
+  }
+  function cont() {
+    pass.apply(null, arguments);
+    return true;
+  }
+  function register(varname) {
+    var state = cx.state;
+    if (state.context) {
+      cx.marked = "def";
+      for (var v = state.localVars; v; v = v.next)
+        if (v.name == varname) return;
+      state.localVars = {name: varname, next: state.localVars};
+    }
+  }
+
+  // Combinators
+
+  var defaultVars = {name: "this", next: {name: "arguments"}};
+  function pushcontext() {
+    if (!cx.state.context) cx.state.localVars = defaultVars;
+    cx.state.context = {prev: cx.state.context, vars: cx.state.localVars};
+  }
+  function popcontext() {
+    cx.state.localVars = cx.state.context.vars;
+    cx.state.context = cx.state.context.prev;
+  }
+  function pushlex(type, info) {
+    var result = function() {
+      var state = cx.state;
+      state.lexical = new JSLexical(state.indented, cx.stream.column(), type, null, state.lexical, info)
+    };
+    result.lex = true;
+    return result;
+  }
+  function poplex() {
+    var state = cx.state;
+    if (state.lexical.prev) {
+      if (state.lexical.type == ")")
+        state.indented = state.lexical.indented;
+      state.lexical = state.lexical.prev;
+    }
+  }
+  poplex.lex = true;
+
+  function expect(wanted) {
+    return function expecting(type) {
+      if (type == wanted) return cont();
+      else if (wanted == ";") return pass();
+      else return cont(arguments.callee);
+    };
+  }
+
+  function statement(type) {
+    if (type == "var") return cont(pushlex("vardef"), vardef1, expect(";"), poplex);
+    if (type == "keyword a") return cont(pushlex("form"), expression, statement, poplex);
+    if (type == "keyword b") return cont(pushlex("form"), statement, poplex);
+    if (type == "{") return cont(pushlex("}"), block, poplex);
+    if (type == ";") return cont();
+    if (type == "function") return cont(functiondef);
+    if (type == "for") return cont(pushlex("form"), expect("("), pushlex(")"), forspec1, expect(")"),
+                                      poplex, statement, poplex);
+    if (type == "variable") return cont(pushlex("stat"), maybelabel);
+    if (type == "switch") return cont(pushlex("form"), expression, pushlex("}", "switch"), expect("{"),
+                                         block, poplex, poplex);
+    if (type == "case") return cont(expression, expect(":"));
+    if (type == "default") return cont(expect(":"));
+    if (type == "catch") return cont(pushlex("form"), pushcontext, expect("("), funarg, expect(")"),
+                                        statement, poplex, popcontext);
+    return pass(pushlex("stat"), expression, expect(";"), poplex);
+  }
+  function expression(type) {
+    if (atomicTypes.hasOwnProperty(type)) return cont(maybeoperator);
+    if (type == "function") return cont(functiondef);
+    if (type == "keyword c") return cont(expression);
+    if (type == "(") return cont(pushlex(")"), expression, expect(")"), poplex, maybeoperator);
+    if (type == "operator") return cont(expression);
+    if (type == "[") return cont(pushlex("]"), commasep(expression, "]"), poplex, maybeoperator);
+    if (type == "{") return cont(pushlex("}"), commasep(objprop, "}"), poplex, maybeoperator);
+    return cont();
+  }
+  function maybeoperator(type, value) {
+    if (type == "operator" && /\+\+|--/.test(value)) return cont(maybeoperator);
+    if (type == "operator") return cont(expression);
+    if (type == ";") return;
+    if (type == "(") return cont(pushlex(")"), commasep(expression, ")"), poplex, maybeoperator);
+    if (type == ".") return cont(property, maybeoperator);
+    if (type == "[") return cont(pushlex("]"), expression, expect("]"), poplex, maybeoperator);
+  }
+  function maybelabel(type) {
+    if (type == ":") return cont(poplex, statement);
+    return pass(maybeoperator, expect(";"), poplex);
+  }
+  function property(type) {
+    if (type == "variable") {cx.marked = "property"; return cont();}
+  }
+  function objprop(type) {
+    if (type == "variable") cx.marked = "property";
+    if (atomicTypes.hasOwnProperty(type)) return cont(expect(":"), expression);
+  }
+  function commasep(what, end) {
+    function proceed(type) {
+      if (type == ",") return cont(what, proceed);
+      if (type == end) return cont();
+      return cont(expect(end));
+    }
+    return function commaSeparated(type) {
+      if (type == end) return cont();
+      else return pass(what, proceed);
+    };
+  }
+  function block(type) {
+    if (type == "}") return cont();
+    return pass(statement, block);
+  }
+  function vardef1(type, value) {
+    if (type == "variable"){register(value); return cont(vardef2);}
+    return cont();
+  }
+  function vardef2(type, value) {
+    if (value == "=") return cont(expression, vardef2);
+    if (type == ",") return cont(vardef1);
+  }
+  function forspec1(type) {
+    if (type == "var") return cont(vardef1, forspec2);
+    if (type == ";") return pass(forspec2);
+    if (type == "variable") return cont(formaybein);
+    return pass(forspec2);
+  }
+  function formaybein(type, value) {
+    if (value == "in") return cont(expression);
+    return cont(maybeoperator, forspec2);
+  }
+  function forspec2(type, value) {
+    if (type == ";") return cont(forspec3);
+    if (value == "in") return cont(expression);
+    return cont(expression, expect(";"), forspec3);
+  }
+  function forspec3(type) {
+    if (type != ")") cont(expression);
+  }
+  function functiondef(type, value) {
+    if (type == "variable") {register(value); return cont(functiondef);}
+    if (type == "(") return cont(pushlex(")"), pushcontext, commasep(funarg, ")"), poplex, statement, popcontext);
+  }
+  function funarg(type, value) {
+    if (type == "variable") {register(value); return cont();}
+  }
+
+  // Interface
+
+  return {
+    startState: function(basecolumn) {
+      return {
+        tokenize: jsTokenBase,
+        reAllowed: true,
+        cc: [],
+        lexical: new JSLexical((basecolumn || 0) - indentUnit, 0, "block", false),
+        localVars: null,
+        context: null,
+        indented: 0
+      };
+    },
+
+    token: function(stream, state) {
+      if (stream.sol()) {
+        if (!state.lexical.hasOwnProperty("align"))
+          state.lexical.align = false;
+        state.indented = stream.indentation();
+      }
+      if (stream.eatSpace()) return null;
+      var style = state.tokenize(stream, state);
+      if (type == "comment") return style;
+      state.reAllowed = type == "operator" || type == "keyword c" || type.match(/^[\[{}\(,;:]$/);
+      return parseJS(state, style, type, content, stream);
+    },
+
+    indent: function(state, textAfter) {
+      if (state.tokenize != jsTokenBase) return 0;
+      var firstChar = textAfter && textAfter.charAt(0), lexical = state.lexical,
+          type = lexical.type, closing = firstChar == type;
+      if (type == "vardef") return lexical.indented + 4;
+      else if (type == "form" && firstChar == "{") return lexical.indented;
+      else if (type == "stat" || type == "form") return lexical.indented + indentUnit;
+      else if (lexical.info == "switch" && !closing)
+        return lexical.indented + (/^(?:case|default)\b/.test(textAfter) ? indentUnit : 2 * indentUnit);
+      else if (lexical.align) return lexical.column + (closing ? 0 : 1);
+      else return lexical.indented + (closing ? 0 : indentUnit);
+    },
+
+    electricChars: ":{}"
+  };
+});
+
+CodeMirror.defineMIME("text/javascript", "javascript");
+CodeMirror.defineMIME("application/json", {name: "javascript", json: true});
+var thunderReady = function(callback) {
+  var callbackId = Math.floor(Math.random() * 100000);
+  var loadedCallbacks = [];
+
+   function callbackOnce() {
+    if (loadedCallbacks.indexOf(callbackId) >= 0) {
+      return;
+    }
+    loadedCallbacks.push(callbackId);
+    callback();
+  }
+
+  if (document.readyState === "complete") {
+    // Handle it asynchronously to allow scripts the opportunity to delay ready
+    return setTimeout(callbackOnce, 1);
+  }
+
+  // Mozilla, Opera and webkit nightlies currently support this event
+  if (document.addEventListener) {
+    // Use the handy event callback
+    document.addEventListener("DOMContentLoaded", callbackOnce, false);
+
+    // A fallback to window.onload, that will always work
+    window.addEventListener("load", callbackOnce, false);
+
+    // If IE event model is used
+  } else if (document.attachEvent) {
+    // ensure firing before onload,
+    // maybe late but safe also for iframes
+    document.attachEvent("onreadystatechange", callbackOnce);
+
+    window.attachEvent("onload", callbackOnce);
+  }
+
+};
+
+thunderReady(function() {
+  var cm_editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    theme: 'night'
+  });
+
+  var pimpForm = document.getElementById('pimpForm');
+  var pimped = document.getElementById('pimped');
+  var pimpedClose = pimped.getElementsByClassName('close')[0];
+
+  pimpForm.onsubmit = function() {
+    pimped.style.display = 'block';
+  };
+
+  var closePimped = function(ev) {
+    pimped.style.display = 'none';
+    ev.preventDefault && ev.preventDefault();
+    return false;
+  };
+
+  if (pimpedClose.addEventListener) {
+    pimpedClose.addEventListener('click',closePimped);
+  } else if (pimpedClose.attachEvent) {
+    pimpedClose.attachEvent('click',closePimped);
+  }
+
+});
+
+yepnope({
+  load: ['https://apis.google.com/js/plusone.js', '//platform.twitter.com/widgets.js'],
+  complete: function() {
+    var shareElems = document.getElementsByClassName('share');
+    var i = 0, l = shareElems.length;
+    for ( ; i < l; i++) {
+      shareElems[i].style.display = 'block';
+    }
+  }
+});
+
+// Check if a new cache is available on page load.
+if (window.addEventListener && typeof window.applicationCache !== 'undefined') {
+  window.addEventListener('load', function(e) {
+
+    window.applicationCache.addEventListener('updateready', function(e) {
+      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+        // Browser downloaded a new app cache.
+        // Swap it in and reload the page to get the new hotness.
+        window.applicationCache.swapCache();
+        if (confirm('A new version of this site is available. Load it?')) {
+          window.location.reload();
+        }
+      } else {
+        // Manifest didn't changed. Nothing new to server.
+      }
+    }, false);
+
+  }, false);
+}
+
+// Google Analytics
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-26406401-2']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script');
+  ga.type = 'text/javascript';
+  ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ga, s);
 })();
