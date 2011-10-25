@@ -3160,7 +3160,6 @@ yepnope({
     for ( ; i < l; i++) {
       shareElems[i].style.display = 'block';
     }
-    console.log('complete yep');
   }
 });
 
