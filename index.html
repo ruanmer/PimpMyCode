@@ -12,8 +12,10 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" defer></script>
     <![endif]-->
 
-    <!-- Le styles -->
-    <link href="css/style.min.css?v=125" rel="stylesheet">
+    
+    <!-- pimp.css -->
+    <link href='http://fonts.googleapis.com/css?family=Sansita+One' rel='stylesheet' type='text/css'>
+    <link href="css/pimp.css" rel="stylesheet">
 
     <script src="js/compiled.min.js?v=125" async></script>
 
@@ -22,109 +24,113 @@
 <body>
 
 <div class="topbar">
-    <div class="fill">
-        <div class="container">
-            <a class="brand" href="http://pimpmyjs.com">PimpMyJS</a>
-            <ul class="nav">
-                <li class="active"><a href="http://pimpmyjs.com">Home</a></li>
-                <li><a href="https://github.com/leobalter/PimpMyCode" target="_blank">See the code in Github</a></li>
-                <li class="share">
-                    <g:plusone size="medium"></g:plusone>
-                </li>
-                <li class="share">
-                    <a href="https://twitter.com/share" class="twitter-share-button"
-                         data-text="Uglify or Beautify your JavaScript" data-count="horizontal"
-                         data-via="PimpMyJS" data-related="leobalter">Tweet</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+  <div class="wrapper">
+      <a class="brand" href="http://pimpmyjs.com" title="PimpMyJS - Uglify or Beautify your JavaScript, it's your choice...">PimpMyJS - Uglify or Beautify your JavaScript, it's your choice...</a>
+      <ul class="nav">
+          <li class="active"><a href="http://pimpmyjs.com">Home</a></li>
+          <li><a href="https://github.com/leobalter/PimpMyCode" target="_blank">See the code in Github</a></li>
+          <li class="share">
+              <g:plusone size="medium"></g:plusone>
+          </li>
+          <li class="share">
+              <a href="https://twitter.com/share" class="twitter-share-button"
+                   data-text="Uglify or Beautify your JavaScript" data-count="horizontal"
+                   data-via="PimpMyJS" data-related="leobalter">Tweet</a>
+          </li>
+      </ul>
+  </div>
 </div>
 
 
 <div class="container">
+  <div class="wrapper">
     <header>
-        <h1>Uglify or Beautify your JavaScript, it's your choice...</h1>
+        <h1><abbr title="Generate a minified version of the javascript">Uglify</abbr> or <abbr title="Generate a pretty-format version of the javascript">Beautify</abbr> your JavaScript, <span>it's your choice</span>...</h1>
 
         <p class="desc">It's a code pimper with uglify option! You can use it's interface or simply the webservice to minify or get a pretty print of your javascript code</p>
     </header>
-
-    <form id="pimpForm" class="form-stacked" action="http://pimpmyjs.com:3000/" novalidate autocomplete="off"
-          method="POST" target="pimped">
-        <div class="row">
-            <textarea name="toPimp" id="code" tabindex="1"></textarea>
-
-            <div class="span4">
-                <div class="alert-message info">
-                    <p>Options</p>
-                </div>
-                <div class="clearfix">
-                    <div class="input">
-                        <ul class="inputs-list">
-                            <li>
-                                <label>
-                                    <input type="checkbox" value="beautify" name="uglifyopts">
-                                    <span>beautify</span>
-                                </label>
-                                <span class="help-block">
-                                  Invert the minification process: turns the ugly JS to a <strong>pretty
-                                    printed</strong> code. *
-                                </span>
-                            </li>
-                            <li>
-                                <label>
-                                    <input type="checkbox" value="lift" name="uglifyopts">
-                                    <span>lift-vars</span>
-                                </label>
-                                <span class="help-block">
-                                  Merge and move <code>var</code> declarations to the top of the scope
-                                </span>
-                            </li>
-                            <li>
-                                <label>
-                                    <input type="checkbox" value="unsafe" name="uglifyopts">
-                                    <span>unsafe</span>
-                                </label>
-                                <span class="help-block">
-                                  <em>Black Magic Voodoo</em> for better compression
-                                </span>
-                            </li>
-                            <li>
-                                <label>
-                                    <input type="checkbox" value="inline" name="uglifyopts">
-                                    <span>inline-script</span>
-                                </label>
-                                <span class="help-block">
-                                  Escape <code>&lt;/script></code> to prevent errors in inline scripts
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <button class="btn danger span16 large" id="pimpit" type="submit">Pimp it!</button>
-        </div>
-
-        <div class="row">
-             <div id="pimped" class="span16">
-                <div class="alert-message success">
-                    <a class="close" href="#">×</a>
-                    <p><strong>Pimped!</strong></p>
-                </div>
-
-                <div class="well">
-                    <iframe src="blank.html" name="pimped"></iframe>
-                </div>
-            </div>
-        </div>
-
-    </form>
-
+    
+    <hr />
+    
+    
+    <!-- core -->
+    <div class="core-section">
+      <form id="pimpForm" class="form-stacked" action="http://pimpmyjs.com:3000/" novalidate autocomplete="off"
+                method="POST" target="pimped">
+              <div class="row">
+                  <textarea name="toPimp" id="code" tabindex="1"></textarea>
+      
+                  <div class="code-sidebar">
+                      <h2>Options</h2>
+                              <ul class="inputs-list">
+                                  <li>
+                                      <label>
+                                          <input type="checkbox" value="beautify" name="uglifyopts">
+                                          <span>beautify</span>
+                                      </label>
+                                      <span>
+                                        Invert the minification process: turns the ugly JS to a <strong>pretty
+                                          printed</strong> code. *
+                                      </span>
+                                  </li>
+                                  <li>
+                                      <label>
+                                          <input type="checkbox" value="lift" name="uglifyopts">
+                                          <span>lift-vars</span>
+                                      </label>
+                                      <span>
+                                        Merge and move <code>var</code> declarations to the top of the scope
+                                      </span>
+                                  </li>
+                                  <li>
+                                      <label>
+                                          <input type="checkbox" value="unsafe" name="uglifyopts">
+                                          <span>unsafe</span>
+                                      </label>
+                                      <span>
+                                        <em>Black Magic Voodoo</em> for better compression
+                                      </span>
+                                  </li>
+                                  <li>
+                                      <label>
+                                          <input type="checkbox" value="inline" name="uglifyopts">
+                                          <span>inline-script</span>
+                                      </label>
+                                      <span>
+                                        Escape <code>&lt;/script></code> to prevent errors in inline scripts
+                                      </span>
+                                  </li>
+                              </ul>
+                  </div>
+              </div>
+      
+              <button class="btn" id="pimpit" type="submit">Pimp it!</button>
+              
+              <!-- pimped -->
+               <div id="pimped">
+                  <div class="alert-message success">
+                      <a class="close" href="#">×</a>
+                      <p><strong>Pimped!</strong></p>
+                  </div>
+        
+                  <div class="well">
+                      <iframe src="blank.html" name="pimped"></iframe>
+                  </div>
+              </div>
+              <!-- / pimped -->
+      
+          </form>
+    </div>
+    <!-- / core -->
+    
+    <hr />
+    
     <p class="desc">Checkout the form source to see the webservice's funcionality!</p>
+    
+    <hr />
 
+    <!-- FAQ -->
+    <div class="faq">
     <h2>How does this work?</h2>
 
     <div class="row">
@@ -257,11 +263,16 @@
             </div>
         </div>
     </div>
-
+    </div>
+    <!-- / FAQ -->
+    
+    <hr />
+    
     <footer>
-        <p>&copy; WTFPL 2011</p>
+        <p>&copy; PimpMyJS - Uglify or Beautify your JavaScript, it's your choice...</p>
     </footer>
 
+  </div>
 </div>
 <!-- /container -->
 
